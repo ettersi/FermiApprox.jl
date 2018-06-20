@@ -1,4 +1,7 @@
 using ApproxTools
+using PyPlot
+using PyCall;
+@pyimport matplotlib.colors as mplcolors;
 
 function rationalfactor(β,η)
     T = promote_type(typeof.((β,η))...)
@@ -26,4 +29,51 @@ function approx_conductivity(
         Chebyshev.((npoly,npoly))
     )
     return Semiseparated(p,(q,q))
+end
+
+function plot_convergence()
+    β = 100
+    η = 1/β*im
+
+    f = (x1,x2)->fermidiff(x1,x2,β)/(x1-x2+η)
+
+    n = 1:50:2000
+    @time err = [begin
+        p = approx_conductivity(β,η, n,n)
+        fnorm(f,p)/fnorm(f)
+    end
+    for n = n]
+
+    fig = figure(figsize=(6,4.5))
+    try
+        semilogy(n, err, label="relative error");
+        semilogy(n, abs(ijouk(η/2)).^(-2n), "k--", label="theoretical convergence rate")
+        xlabel("polynomial degree")
+        legend(loc="best")
+
+        savefig("convergence.png")
+        println("Plot saved at $(pwd())/convergence.png")
+    finally
+        close(fig)
+    end
+end
+
+function plot_coeffs()
+    β = 100
+    η = 1/β*im
+    n = 2001
+
+    @time p = approx_conductivity(β,η,n,n)
+    C = abs.(coeffs(p.core))
+    C ./= maximum(C)
+
+    fig = figure(figsize=(6,4.5))
+    try
+        imshow(C, norm=mplcolors.LogNorm(), vmin=1e-14)
+        colorbar()
+        savefig("coefficients.png")
+        println("Plot saved at $(pwd())/coefficients.png")
+    finally
+        close(fig)
+    end
 end
