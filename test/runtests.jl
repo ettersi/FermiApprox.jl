@@ -4,5 +4,3 @@ using FermiApprox
 else
     using Test
 end
-
-include("conductivity.jl")
