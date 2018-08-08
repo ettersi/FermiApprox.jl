@@ -126,7 +126,7 @@ function eval_sparse(f::Semiseparated,H,Da,Db,bwidth)
             σ += c[max(i2-bwidth,1)+i1-1,i2]*(Tv1'*Da*Tv2)
         end
     end
-    return σ/N
+    return σ
 end
 
 """
