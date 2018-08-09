@@ -126,7 +126,7 @@ function eval_sparse(f::Semiseparated,H,Da,Db,bwidth)
             σ += c[max(i2-bwidth,1)+i1-1,i2]*(Tv1'*Da*Tv2)
         end
     end
-    return σ/N
+    return σ
 end
 
 """
@@ -134,14 +134,24 @@ end
 
 Evaluate the conductivity formula via diagonalising the Hamiltonian.
 """
-function eval_diag(f,H,Da,Db)
+function eval_diag(f,H,Da,Db,i0=1)
     N = size(H,1)
     E,Ψ = eig(full(H))
     D̃a = Ψ'*Da*Ψ
-    D̃b = Ψ'*Db[:,1]
+    D̃b = Ψ'*Db[:,i0]
     F = grideval(f,(E,E))
-    M = Diagonal(Ψ[1,:])*D̃a*Diagonal(D̃b)
-    return dot(vec(M),vec(F))/N
+    M = Diagonal(Ψ[i0,:])*D̃a*Diagonal(D̃b)
+    return dot(vec(M),vec(F))
+end
+
+function naive_cond(F, H, ∂H)
+   N = size(H,1)
+   E,Ψ = eig(full(H))
+   σ = 0.0
+   for i = 1:N, j = 1:N
+      σ += F(E[i], E[j]) * dot(Ψ[:,i], ∂H * Ψ[:,j]) * dot(Ψ[:,j], ∂H * Ψ[:,i])
+   end
+   return σ/N
 end
 
 
