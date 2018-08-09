@@ -90,7 +90,7 @@ in Chebyshev basis.
 Terms further than `bwidth` away from the diagonal are ignored in the
 expansion of `p`.
 """
-function eval_sparse(f::Semiseparated,H,Da,Db,bwidth)
+function eval_sparse(f::Semiseparated,H,Da,Db,i0,bwidth)
     N = size(H,1)
     p = f.core::LinearCombination
     q = f.factors[1]
@@ -102,9 +102,9 @@ function eval_sparse(f::Semiseparated,H,Da,Db,bwidth)
     @assert f.factors == (q,q)
     @assert p.basis == (b,b)
 
-    v1 = zeros(N); v1[1] = 1
+    v1 = zeros(N); v1[i0] = 1
     v1 = q(H,v1)
-    v2 = full(Db[:,1])
+    v2 = full(Db[:,i0])
     v2 = q(H,v2)
 
     Tv1_iter = Stateful(b(H,v1))
