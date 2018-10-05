@@ -26,8 +26,8 @@ for i = 1:length(ε)
     bwidth = nterms(ε[i]/maxf, abs(ijouk(1+η)))
     p = approx_conductivity(β,η,n,n)
     err_approx[i] = fnorm(f,p)/maxf
-    err_sparse[i] = abs(σref - eval_sparse(p,H,∂H,∂H,bwidth))/abs(σref)
-    err_dense[i] = abs(σref - eval_sparse(p,H,∂H,∂H,n))/abs(σref)
+    err_sparse[i] = abs(σref - eval_sparse(p,H,∂H,∂H,1,bwidth))/abs(σref)
+    err_dense[i] = abs(σref - eval_sparse(p,H,∂H,∂H,1,n))/abs(σref)
 end
 
 
