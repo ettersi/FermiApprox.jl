@@ -147,9 +147,10 @@ end
 function naive_cond(F, H, ∂H)
    N = size(H,1)
    E,Ψ = eig(full(H))
+   Ψ2 = Ψ'*∂H*Ψ
    σ = 0.0
    for i = 1:N, j = 1:N
-      σ += F(E[i], E[j]) * dot(Ψ[:,i], ∂H * Ψ[:,j]) * dot(Ψ[:,j], ∂H * Ψ[:,i])
+       σ += F(E[i], E[j]) * Ψ2[i,j] * Ψ2[j,i];
    end
    return σ/N
 end
